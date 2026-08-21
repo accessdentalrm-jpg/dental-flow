@@ -1,0 +1,355 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Access Dental Master Call Flow</title>
+    <style>
+        :root {
+            --primary: #1d4ed8;
+            --bg: #f8fafc;
+            --card: #ffffff;
+            --text: #0f172a;
+            --border: #cbd5e1;
+            --accent: #eff6ff;
+            --success: #16a34a;
+            --error: #ef4444;
+        }
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: var(--bg);
+            color: var(--text);
+            margin: 0;
+            padding: 15px;
+            font-size: 13px;
+        }
+        .container {
+            max-width: 850px;
+            margin: 0 auto;
+            background: var(--card);
+            padding: 20px;
+            border-radius: 12px;
+            box-shadow: 0 4px 6px -1px rgba(0,0,0,0.1);
+        }
+        h2 { color: var(--primary); margin: 0 0 15px 0; font-size: 20px; border-bottom: 3px solid var(--primary); padding-bottom: 5px; }
+        
+        .section {
+            margin-bottom: 15px;
+            padding: 15px;
+            border: 1px solid var(--border);
+            border-radius: 8px;
+        }
+        .section-title {
+            font-weight: 800;
+            text-transform: uppercase;
+            font-size: 11px;
+            color: #64748b;
+            margin-bottom: 12px;
+            display: flex;
+            align-items: center;
+            gap: 8px;
+        }
+
+        .grid { display: grid; grid-template-columns: 1fr 1fr; gap: 12px; }
+        .full-width { grid-column: span 2; }
+        
+        label { display: block; margin-bottom: 4px; font-weight: 600; color: #334155; }
+        input, select, textarea {
+            width: 100%;
+            padding: 8px;
+            border: 1px solid var(--border);
+            border-radius: 6px;
+            box-sizing: border-box;
+            font-size: 13px;
+        }
+
+        .script-box {
+            background: var(--accent);
+            border-left: 4px solid var(--primary);
+            padding: 10px;
+            margin: 10px 0;
+            font-style: italic;
+            color: #1e40af;
+            font-weight: 500;
+        }
+
+        .checklist { list-style: none; padding: 0; margin: 5px 0; }
+        .checklist li { display: flex; align-items: center; margin-bottom: 6px; font-size: 12.5px; }
+        .checklist input[type="checkbox"] { width: auto; margin-right: 10px; cursor: pointer; }
+
+        .hidden { display: none; }
+
+        .notes-area {
+            background: #1e293b;
+            color: #f8fafc;
+            font-family: 'Courier New', monospace;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            margin-top: 10px;
+            font-size: 12px;
+            line-height: 1.4;
+        }
+
+        .btn-save {
+            background: var(--success);
+            color: white;
+            border: none;
+            padding: 15px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 800;
+            margin-top: 20px;
+            font-size: 16px;
+        }
+        
+        .btn-reset {
+            background: #94a3b8;
+            color: white;
+            border: none;
+            padding: 8px;
+            border-radius: 6px;
+            cursor: pointer;
+            width: 100%;
+            font-weight: 800;
+            margin-top: 10px;
+        }
+
+        .ins-subgroup { background: #f1f5f9; padding: 10px; border-radius: 6px; margin-top: 10px; }
+        
+        #statusBanner {
+            display: none;
+            padding: 10px;
+            border-radius: 6px;
+            margin-bottom: 15px;
+            font-weight: bold;
+            text-align: center;
+        }
+    </style>
+</head>
+<body>
+
+<div class="container">
+    <div id="statusBanner"></div>
+    
+    <div style="display: flex; justify-content: space-between; align-items: center; margin-bottom: 10px;">
+        <h2>Access Dental Call Flow</h2>
+        <div id="connState" style="font-weight: bold; color: var(--success); font-size: 11px;">● Hosted Mode</div>
+    </div>
+
+    <!-- PHASE 1: OPENING -->
+    <div class="section">
+        <span class="section-title">Step 1: Opening</span>
+        <div class="script-box">"Thank you for calling Access Dental of [Clinic Name], this is [My Name], how can I help you today?"</div>
+        <div class="grid" style="margin-top:10px;">
+            <div>
+                <label>Patient Name / Spelling</label>
+                <input type="text" id="pName" placeholder="John Doe (J-O-H-N)" oninput="syncNotes()">
+            </div>
+            <div>
+                <label>Status</label>
+                <select id="pStatus" onchange="toggleNewPatient(); syncNotes();">
+                    <option value="Existing Patient">Existing Patient</option>
+                    <option value="New Patient ✨">New Patient ✨</option>
+                </select>
+            </div>
+            
+            <div id="newPatientFields" class="hidden full-width">
+                <div class="grid">
+                    <div>
+                        <label>Phone Number</label>
+                        <input type="text" id="pPhone" placeholder="000-000-0000" oninput="syncNotes()">
+                    </div>
+                    <div>
+                        <label>Email</label>
+                        <input type="email" id="pEmail" placeholder="example@mail.com" oninput="syncNotes()">
+                    </div>
+                    <div class="full-width">
+                        <label>Date of Birth (MM/DD/YYYY)</label>
+                        <input type="date" id="pDob" oninput="syncNotes()">
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHASE 2: REASON & CLINIC -->
+    <div class="section">
+        <span class="section-title">Step 2: Body of the Call</span>
+        <div class="grid">
+            <div class="full-width">
+                <label>Reason for Visit</label>
+                <select id="treatment" onchange="syncNotes()">
+                    <option value="">-- Select Reason --</option>
+                    <option>COE - Comprehensive Oral Evaluation</option>
+                    <option>POE - Periodic Oral Evaluation</option>
+                    <option>LOE - Limited (Emergency/Pain)</option>
+                    <option>Recall - Routine checkup</option>
+                    <option>Walk-in (No appointment)</option>
+                    <option>FDH - First Dental Home</option>
+                    <option>Delivery / Adjustment / PostOp</option>
+                </select>
+            </div>
+            <div class="full-width">
+                <label>Location / Clinic</label>
+                <select id="clinic" onchange="syncNotes()">
+                    <option value="">-- Select Clinic --</option>
+                    <optgroup label="Texas">
+                        <option>Ayers, Corpus Christi TX</option>
+                        <option>Fredericksburg, San Antonio TX</option>
+                        <option>William Cannon, Austin TX</option>
+                        <option>North Loop, El Paso TX</option>
+                        <option>Weslaco, Valley TX</option>
+                        <option>Zarzamora, San Antonio TX</option>
+                    </optgroup>
+                    <optgroup label="Other States">
+                        <option>Bloomington, IL</option>
+                        <option>Normal, IL</option>
+                        <option>Springfield, IL</option>
+                        <option>New Mexico, NM</option>
+                        <option>Terre Haute, IN</option>
+                    </optgroup>
+                </select>
+            </div>
+        </div>
+    </div>
+
+    <!-- PHASE 3: INSURANCE -->
+    <div class="section">
+        <span class="section-title">Step 3: Insurance</span>
+        <select id="insType" onchange="toggleIns(); syncNotes();">
+            <option value="Self-Pay">Self-Pay / Cash</option>
+            <option value="PPO">PPO (DPO)</option>
+            <option value="Medicaid/Medicare">Medicaid / Medicare</option>
+        </select>
+
+        <div id="ppoFields" class="hidden ins-subgroup">
+            <div class="grid">
+                <input type="text" id="ppoName" placeholder="Ins Name" oninput="syncNotes()">
+                <input type="text" id="ppoId" placeholder="Member ID/SSN" oninput="syncNotes()">
+                <input type="text" id="ppoHolder" placeholder="Policyholder Name" oninput="syncNotes()">
+                <input type="date" id="ppoHolderDob" placeholder="Holder DOB" oninput="syncNotes()">
+                <input type="text" id="ppoGroup" placeholder="Group #" oninput="syncNotes()">
+                <input type="text" id="ppoEmployer" placeholder="Employer" oninput="syncNotes()">
+                <input type="text" class="full-width" id="ppoPhone" placeholder="Insurance 800 Phone Number" oninput="syncNotes()">
+            </div>
+        </div>
+    </div>
+
+    <!-- PHASE 4: CLOSING -->
+    <div class="section">
+        <span class="section-title">Step 4: Closing Check</span>
+        <ul class="checklist">
+            <li><input type="checkbox"> Confirm Date, Time & Address</li>
+            <li><input type="checkbox"> ID, Insurance Card & Medication List</li>
+            <li><input type="checkbox"> 48-Hour notice to reschedule</li>
+            <li><input type="checkbox"> Offer Free Consult (Ortho/Invisalign)</li>
+        </ul>
+    </div>
+
+    <textarea id="callNotes" class="notes-area" rows="8" readonly></textarea>
+    
+    <button id="btnSave" class="btn-save" onclick="saveToSheet()">SAVE CALL DATA</button>
+    <button class="btn-reset" onclick="window.location.reload()">RESET FORM</button>
+</div>
+
+<script>
+    // PEGA AQUÍ TU URL DE GOOGLE SCRIPT
+    const WEB_APP_URL = "TU_URL_DE_GOOGLE_SCRIPT_AQUI";
+
+    function formatDate(dateStr) {
+        if (!dateStr) return "---";
+        const [year, month, day] = dateStr.split('-');
+        return `${month}/${day}/${year}`; // Formato EEUU MM/DD/YYYY
+    }
+
+    function toggleNewPatient() {
+        const status = document.getElementById('pStatus').value;
+        document.getElementById('newPatientFields').className = (status.includes('New')) ? 'full-width' : 'hidden';
+    }
+
+    function toggleIns() {
+        const type = document.getElementById('insType').value;
+        document.getElementById('ppoFields').className = (type === 'PPO' || type === 'Medicaid/Medicare') ? 'ins-subgroup' : 'hidden';
+    }
+
+    function syncNotes() {
+        const name = document.getElementById('pName').value;
+        const status = document.getElementById('pStatus').value;
+        const dob = formatDate(document.getElementById('pDob').value);
+        const reason = document.getElementById('treatment').value;
+        const clinic = document.getElementById('clinic').value;
+        const insType = document.getElementById('insType').value;
+
+        let summary = `PATIENT LOG - ${new Date().toLocaleDateString()}\n`;
+        summary += `===========================\n`;
+        summary += `NAME: ${name || '---'} | STATUS: ${status}\n`;
+        if(status.includes('New')) summary += `DOB: ${dob} | PHONE: ${document.getElementById('pPhone').value || '---'}\n`;
+        summary += `REASON: ${reason || '---'} | CLINIC: ${clinic || '---'}\n`;
+        summary += `INSURANCE: ${insType}\n`;
+        if(insType !== 'Self-Pay') {
+            summary += ` > MEMBER ID: ${document.getElementById('ppoId').value || '---'}\n`;
+        }
+        summary += `===========================`;
+        document.getElementById('callNotes').value = summary;
+    }
+
+    function showStatus(msg, type) {
+        const banner = document.getElementById('statusBanner');
+        banner.innerText = msg;
+        banner.style.display = 'block';
+        banner.style.backgroundColor = type === 'success' ? '#dcfce7' : '#fee2e2';
+        banner.style.color = type === 'success' ? '#166534' : '#991b1b';
+    }
+
+    async function saveToSheet() {
+        const btn = document.getElementById('btnSave');
+        const name = document.getElementById('pName').value;
+
+        if(!name) { 
+            showStatus("❌ ERROR: Patient Name is required", "error");
+            return; 
+        }
+
+        const data = {
+            name: name,
+            status: document.getElementById('pStatus').value,
+            phone: document.getElementById('pPhone').value,
+            email: document.getElementById('pEmail').value,
+            dob: formatDate(document.getElementById('pDob').value),
+            reason: document.getElementById('treatment').value,
+            clinic: document.getElementById('clinic').value,
+            insType: document.getElementById('insType').value,
+            insName: document.getElementById('ppoName').value || "N/A",
+            insId: document.getElementById('ppoId').value || "N/A",
+            holder: document.getElementById('ppoHolder').value || "N/A",
+            holderDob: formatDate(document.getElementById('ppoHolderDob').value),
+            group: document.getElementById('ppoGroup').value || "N/A",
+            employer: document.getElementById('ppoEmployer').value || "N/A",
+            phone800: document.getElementById('ppoPhone').value || "N/A",
+            notes: document.getElementById('callNotes').value
+        };
+
+        btn.disabled = true;
+        btn.innerText = "SAVING DATA...";
+
+        try {
+            await fetch(WEB_APP_URL, {
+                method: 'POST',
+                mode: 'no-cors',
+                body: JSON.stringify(data)
+            });
+            
+            showStatus("✅ SAVED SUCCESSFULLY TO GOOGLE SHEETS!", "success");
+            btn.innerText = "SUCCESS!";
+            setTimeout(() => { window.location.reload(); }, 2000);
+        } catch (e) {
+            showStatus("❌ CONNECTION ERROR: " + e, "error");
+            btn.disabled = false;
+            btn.innerText = "RETRY SAVE";
+        }
+    }
+</script>
+</body>
+</html>
