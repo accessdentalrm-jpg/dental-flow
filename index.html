@@ -79,16 +79,28 @@
 
         .hidden { display: none; }
 
-        .notes-area {
+        .notes-area-auto {
             background: #1e293b;
-            color: #f8fafc;
+            color: #94a3b8;
             font-family: 'Courier New', monospace;
             border: none;
-            padding: 15px;
-            border-radius: 6px;
-            margin-top: 10px;
-            font-size: 12px;
-            line-height: 1.4;
+            padding: 10px;
+            border-radius: 6px 6px 0 0;
+            font-size: 11px;
+            line-height: 1.3;
+            border-bottom: 1px solid #334155;
+        }
+
+        .notes-area-manual {
+            background: #1e293b;
+            color: #f8fafc;
+            font-family: 'Segoe UI', sans-serif;
+            border: none;
+            padding: 10px;
+            border-radius: 0 0 6px 6px;
+            font-size: 13px;
+            resize: vertical;
+            min-height: 80px;
         }
 
         .btn-save {
@@ -140,7 +152,7 @@
 
     <!-- PHASE 1: OPENING -->
     <div class="section">
-        <span class="section-title">Step 1: Opening</span>
+        <span class="section-title">Step 1: Opening & Patient Info</span>
         <div class="script-box">"Thank you for calling Access Dental of [Clinic Name], this is [My Name], how can I help you today?"</div>
         <div class="grid" style="margin-top:10px;">
             <div>
@@ -149,20 +161,21 @@
             </div>
             <div>
                 <label>Status</label>
-                <select id="pStatus" onchange="toggleNewPatient(); syncNotes();">
+                <select id="pStatus" onchange="syncNotes();">
                     <option value="Existing Patient">Existing Patient</option>
                     <option value="New Patient ✨">New Patient ✨</option>
                 </select>
             </div>
             
-            <div id="newPatientFields" class="hidden full-width">
+            <!-- Campos ahora siempre visibles según tu solicitud -->
+            <div class="full-width">
                 <div class="grid">
                     <div>
                         <label>Phone Number</label>
                         <input type="text" id="pPhone" placeholder="000-000-0000" oninput="syncNotes()">
                     </div>
                     <div>
-                        <label>Email</label>
+                        <label>Email Address</label>
                         <input type="email" id="pEmail" placeholder="example@mail.com" oninput="syncNotes()">
                     </div>
                     <div class="full-width">
@@ -187,41 +200,57 @@
                     <option>LOE - Limited (Emergency/Pain)</option>
                     <option>Recall - Routine checkup</option>
                     <option>Walk-in (No appointment)</option>
-                    <option>FDH - First Dental Home</option>
-                    <option>Delivery / Adjustment / PostOp</option>
+                    <option>FDH - First Dental Home (6mo-2yrs)</option>
+                    <option>Delivery (Dental work placement)</option>
+                    <option>Adjustment (Appliance modification)</option>
+                    <option>PostOp (Follow-up)</option>
+                    <option>Treatment Plan Questions</option>
+                    <option>Reschedule / Cancel</option>
                 </select>
             </div>
             <div class="full-width">
                 <label>Location / Clinic</label>
                 <select id="clinic" onchange="syncNotes()">
                     <option value="">-- Select Clinic --</option>
-                    <optgroup label="Texas">
+                    <optgroup label="Texas - San Antonio">
+                        <option>Fredericksburg, San Antonio TX</option>
+                        <option>Pleasanton, San Antonio TX</option>
+                        <option>Zarzamora, San Antonio TX</option>
+                        <option>White San Antonio TX</option>
+                    </optgroup>
+                    <optgroup label="Texas - Corpus Christi">
                         <option>Ayers, Corpus Christi TX</option>
                         <option>Kostoryz, Corpus Christi TX</option>
                         <option>Leopard, Corpus Christi TX</option>
-                        <option>William Cannon, Austin TX</option>
-                        <option>Rundberg, Austin TX</option>
-                        <option>Trawood, El Paso TX</option>
-                        <option>North Loop, El Paso TX</option>
-                        <option>Beaumont College, Golden Triangle TX</option>
-                        <option>Beaumont Dowlen, Golden Triangle TX</option>
-                        <option>Port Arthur, Golden Triangle TX</option>
-                        <option>Weslaco, Valley TX</option>
-                        <option>Edinburg, Valley TX</option>
-                        <option>Harlingen, Valley TX</option>
-                        <option>Raymondville, Valley TX</option>
-                        <option>Zarzamora, San Antonio TX</option>
-                        <option>Pleasanton, San Antonio TX</option>
-                        <option>Fredericksburg, San Antonio TX</option>
-                        <option>White San Antonio TX</option>
                     </optgroup>
-                    <optgroup label="Other States">
+                    <optgroup label="Texas - The Valley">
+                        <option>Edinburg, TX</option>
+                        <option>Harlingen, TX</option>
+                        <option>Raymondville, TX</option>
+                        <option>Weslaco, TX</option>
+                    </optgroup>
+                    <optgroup label="Texas - Golden Triangle">
+                        <option>Beaumont College, TX</option>
+                        <option>Beaumont Dowlen, TX</option>
+                        <option>Port Arthur, TX</option>
+                    </optgroup>
+                    <optgroup label="Texas - El Paso">
+                        <option>North Loop, TX</option>
+                        <option>Trawood, TX</option>
+                    </optgroup>
+                    <optgroup label="Texas - Austin">
+                        <option>William Cannon, TX</option>
+                        <option>Rundberg, TX</option>
+                    </optgroup>
+                    <optgroup label="Illinois">
                         <option>Bloomington, IL</option>
+                        <option>Main Street, IL</option>
                         <option>Normal, IL</option>
                         <option>Springfield, IL</option>
-                        <option>Main Street, IL</option>
-                        <option>New Mexico, NM</option>
+                    </optgroup>
+                    <optgroup label="Indiana / New Mexico">
                         <option>Terre Haute, IN</option>
+                        <option>New Mexico, NM</option>
                     </optgroup>
                 </select>
             </div>
@@ -242,10 +271,19 @@
                 <input type="text" id="ppoName" placeholder="Ins Name" oninput="syncNotes()">
                 <input type="text" id="ppoId" placeholder="Member ID/SSN" oninput="syncNotes()">
                 <input type="text" id="ppoHolder" placeholder="Policyholder Name" oninput="syncNotes()">
-                <input type="date" id="ppoHolderDob" placeholder="Holder DOB" oninput="syncNotes()">
+                <input type="date" id="ppoHolderDob" oninput="syncNotes()">
                 <input type="text" id="ppoGroup" placeholder="Group #" oninput="syncNotes()">
                 <input type="text" id="ppoEmployer" placeholder="Employer" oninput="syncNotes()">
                 <input type="text" class="full-width" id="ppoPhone" placeholder="Insurance 800 Phone Number" oninput="syncNotes()">
+            </div>
+        </div>
+
+        <div id="govFields" class="hidden ins-subgroup">
+            <div class="grid">
+                <input type="text" id="govName" placeholder="Plan Name" oninput="syncNotes()">
+                <input type="text" id="govId" placeholder="Member ID / Enrollee ID" oninput="syncNotes()">
+                <input type="text" id="govGroup" placeholder="Group / Plan #" oninput="syncNotes()">
+                <input type="text" class="full-width" id="govPhone" placeholder="Customer Service 800#" oninput="syncNotes()">
             </div>
         </div>
     </div>
@@ -261,14 +299,15 @@
         </ul>
     </div>
 
-    <textarea id="callNotes" class="notes-area" rows="8" readonly></textarea>
+    <span class="section-title">📋 Call Summary & Personal Notes</span>
+    <textarea id="callNotesAuto" class="notes-area-auto" rows="6" readonly></textarea>
+    <textarea id="callNotesManual" class="notes-area-manual" placeholder="Type your additional manual notes here..."></textarea>
     
     <button id="btnSave" class="btn-save" onclick="saveToSheet()">SAVE CALL DATA</button>
     <button class="btn-reset" onclick="window.location.reload()">RESET FORM</button>
 </div>
 
 <script>
-    // PEGA AQUÍ TU URL DE GOOGLE SCRIPT
     const WEB_APP_URL = "https://script.google.com/macros/s/AKfycbzNzZ4KrocFYxGJOFHGa4o7H-s745zpyfS2smZgf0HnCZGURy9GngB8mU2v6XKk0Jk/exec";
 
     function formatDate(dateStr) {
@@ -277,35 +316,35 @@
         return `${month}/${day}/${year}`; // Formato EEUU MM/DD/YYYY
     }
 
-    function toggleNewPatient() {
-        const status = document.getElementById('pStatus').value;
-        document.getElementById('newPatientFields').className = (status.includes('New')) ? 'full-width' : 'hidden';
-    }
-
     function toggleIns() {
         const type = document.getElementById('insType').value;
-        document.getElementById('ppoFields').className = (type === 'PPO' || type === 'Medicaid/Medicare') ? 'ins-subgroup' : 'hidden';
+        document.getElementById('ppoFields').className = (type === 'PPO') ? 'ins-subgroup' : 'hidden';
+        document.getElementById('govFields').className = (type === 'Medicaid/Medicare') ? 'ins-subgroup' : 'hidden';
     }
 
     function syncNotes() {
         const name = document.getElementById('pName').value;
         const status = document.getElementById('pStatus').value;
+        const phone = document.getElementById('pPhone').value;
+        const email = document.getElementById('pEmail').value;
         const dob = formatDate(document.getElementById('pDob').value);
         const reason = document.getElementById('treatment').value;
         const clinic = document.getElementById('clinic').value;
         const insType = document.getElementById('insType').value;
 
-        let summary = `PATIENT LOG - ${new Date().toLocaleDateString()}\n`;
-        summary += `===========================\n`;
+        let summary = `AUTO-SUMMARY (${new Date().toLocaleDateString()})\n`;
         summary += `NAME: ${name || '---'} | STATUS: ${status}\n`;
-        if(status.includes('New')) summary += `DOB: ${dob} | PHONE: ${document.getElementById('pPhone').value || '---'}\n`;
+        summary += `DOB: ${dob} | PHONE: ${phone || '---'} | EMAIL: ${email || '---'}\n`;
         summary += `REASON: ${reason || '---'} | CLINIC: ${clinic || '---'}\n`;
         summary += `INSURANCE: ${insType}\n`;
-        if(insType !== 'Self-Pay') {
-            summary += ` > MEMBER ID: ${document.getElementById('ppoId').value || '---'}\n`;
+        
+        if(insType === 'PPO') {
+            summary += ` > INS: ${document.getElementById('ppoName').value || '---'} | ID: ${document.getElementById('ppoId').value || '---'}\n`;
+        } else if (insType === 'Medicaid/Medicare') {
+            summary += ` > PLAN: ${document.getElementById('govName').value || '---'} | ID: ${document.getElementById('govId').value || '---'}\n`;
         }
-        summary += `===========================`;
-        document.getElementById('callNotes').value = summary;
+        
+        document.getElementById('callNotesAuto').value = summary;
     }
 
     function showStatus(msg, type) {
@@ -325,6 +364,11 @@
             return; 
         }
 
+        // Combinar notas automáticas y manuales para el Google Sheet
+        const fullNotes = document.getElementById('callNotesAuto').value + 
+                         "\n--- MANUAL NOTES ---\n" + 
+                         document.getElementById('callNotesManual').value;
+
         const data = {
             name: name,
             status: document.getElementById('pStatus').value,
@@ -334,14 +378,14 @@
             reason: document.getElementById('treatment').value,
             clinic: document.getElementById('clinic').value,
             insType: document.getElementById('insType').value,
-            insName: document.getElementById('ppoName').value || "N/A",
-            insId: document.getElementById('ppoId').value || "N/A",
+            insName: document.getElementById('ppoName').value || document.getElementById('govName').value || "N/A",
+            insId: document.getElementById('ppoId').value || document.getElementById('govId').value || "N/A",
             holder: document.getElementById('ppoHolder').value || "N/A",
             holderDob: formatDate(document.getElementById('ppoHolderDob').value),
-            group: document.getElementById('ppoGroup').value || "N/A",
+            group: document.getElementById('ppoGroup').value || document.getElementById('govGroup').value || "N/A",
             employer: document.getElementById('ppoEmployer').value || "N/A",
-            phone800: document.getElementById('ppoPhone').value || "N/A",
-            notes: document.getElementById('callNotes').value
+            phone800: document.getElementById('ppoPhone').value || document.getElementById('govPhone').value || "N/A",
+            notes: fullNotes
         };
 
         btn.disabled = true;
@@ -363,6 +407,9 @@
             btn.innerText = "RETRY SAVE";
         }
     }
+    
+    // Inicializar notas vacías
+    syncNotes();
 </script>
 </body>
 </html>
